@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须与Mapper接口全路径一致 -->
+<mapper namespace="com.hospitalRegistration.mapper.RoleMapper">
+
+    <insert id="insertRoleByDoctor">
+        insert into role(registration_id,doctor_id)values (#{registrationId},#{doctorId})
+    </insert>
+    <update id="updateRoleByPatient">
+        update role set patient_id=#{patientId} where registration_id=#{registrationId} and doctor_id=#{doctorId}
+    </update>
+</mapper>

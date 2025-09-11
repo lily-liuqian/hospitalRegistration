@@ -1,0 +1,25 @@
+server:
+  port: 3333
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/hospitalRegistration?characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: Ab#$1613
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml # mapper映射文件路径 -- 表示我们未来所有的文件都将放在resource的mapper目录下
+  type-aliases-package: com.hospitalRegistration.entity   # 配置哪个包下的类有默认的别名
+configuration:
+  map-underscore-to-camel-case: true  # 下划线转驼峰（如user_name→userName）
+  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印SQL执行日志
+
+# JWT配置
+jwt:
+  # 使用Base64编码的密钥（不含特殊字符）
+  secret: YWRtaW5pc3RyYXRvckFkbWluMTIzNDU2Nzg5MDEyMzQ1Njc4OTA=
+  # 有效期24小时（单位：毫秒）
+  expiration: 86400000
+
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- namespace必须与PatientMapper接口全路径一致（当前正确） -->
+<mapper namespace="com.hospitalRegistration.mapper.PatientMapper">
+
+    <!-- 1. 修复resultMap：type指向Patient实体类，而非Mapper接口 -->
+    <resultMap id="patientMap" type="com.hospitalRegistration.entity.Patient">
+        <id column="id" property="id"/> <!-- 主键映射 -->
+        <result column="name" property="name"/> <!-- 姓名（登录账号） -->
+        <result column="age" property="age"/> <!-- 年龄 -->
+        <result column="password" property="password"/> <!-- 密码 -->
+        <result column="role_id" property="roleId"/> <!-- 数据库字段role_id → 实体类roleId（驼峰映射） -->
+    </resultMap>
+    <insert id="insert">
+        insert into patient(name,age,password,role_id,times) values (#{name},#{age},#{password},#{roleId},#{times})
+    </insert>
+    <update id="updateById">
+
+    </update>
+    <delete id="deleteById">
+        delete from patient where id=#{id}
+    </delete>
+    <select id="getPatientByName" resultType="com.hospitalRegistration.entity.Patient">
+        select * from patient where name=#{name}
+    </select>
+    <select id="selectById" resultType="com.hospitalRegistration.entity.Patient">
+        select * from patient where id=#{id}
+    </select>
+    <select id="selectList" resultType="com.hospitalRegistration.entity.Patient">
+        select * from patient
+    </select>
+    <select id="countPatientById" resultType="java.lang.Integer">
+        select count(*) from patient where id=#{id}
+    </select>
+</mapper>

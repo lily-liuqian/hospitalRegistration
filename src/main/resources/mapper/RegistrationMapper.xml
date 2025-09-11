@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须与Mapper接口全路径一致 -->
+<mapper namespace="com.hospitalRegistration.mapper.RegistrationMapper">
+    <insert id="insertRegistration">
+        insert into registration(doctor_name,time,type,fee,doctor_id)
+        values (#{doctorName},#{time},#{type},#{fee},#{doctorId})
+    </insert>
+    <update id="postRegistration">
+        update registration set patient_id=#{patientId} where doctor_id=#{doctorId} and time=#{time} and type=#{type}
+    </update>
+    <update id="updateStatus" >
+        update registration
+        set status_id = (
+            select id from registrationStatus
+            where registrationStatus.status = #{status}
+        )
+        where number = #{number}
+    </update>
+    <update id="setSchedule">
+        INSERT INTO registration (doctor_name, time, type, fee, status_id, doctor_id)
+        VALUES (#{doctorName}, #{time}, #{type}, #{fee}, #{statusId}, #{doctorId})
+    </update>
+    <update id="updateSchedule">
+        update registration set doctor_name=#{doctorName},time=#{time},type=#{type},fee=#{fee},doctor_id=#{doctorId} where number=#{number}
+    </update>
+    <delete id="deleteSchedule">
+        delete from registration where number=#{number}
+    </delete>
+
+
+    <select id="selectAllUseByPatient" resultType="com.hospitalRegistration.entity.Registration">
+        select
+            registration.number,doctor_name,time,type,status
+        from
+            registrationStatus,registration
+        where
+            registration.status_id = registrationStatus.id and registration.number=#{number}
+    </select>
+    <select id="selectById" resultType="com.hospitalRegistration.entity.Registration">
+        select * from registration where doctor_id=#{doctorId}
+    </select>
+    <select id="selectMissNumById" resultType="java.lang.Integer">
+        select count(*) from registration where status_id = 2 and patient_id = #{patientId}
+    </select>
+    <select id="selectAllSchedule" resultType="com.hospitalRegistration.entity.Registration">
+        select
+            registration.number,doctor_name,time,type,status
+        from
+            registrationStatus,registration
+        where
+            registration.status_id = registrationStatus.id
+    </select>
+</mapper>

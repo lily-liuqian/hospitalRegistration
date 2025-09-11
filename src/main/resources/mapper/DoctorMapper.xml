@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须与Mapper接口全路径一致 -->
+<mapper namespace="com.hospitalRegistration.mapper.DoctorMapper">
+
+
+    <insert id="insertDoctor">
+        insert into doctor (name,age,password,gender,office,study,position,role_id)
+        values (#{name},#{age},#{password},#{gender},#{office},#{study},#{position},#{roleId})
+    </insert>
+    <insert id="insertLogin">
+        insert into doctor (name,age,password,gender,office,study,position,role_id)
+        values (#{name},#{age},#{password},#{gender},#{office},#{study},#{position},#{roleId})
+    </insert>
+    <update id="updateById">
+        update doctor set name=#{name},age=#{age},department=#{department},field=#{field},position=#{position} where id=#{id}
+    </update>
+    <delete id="daleteById">
+        delete from doctor where id=#{id}
+    </delete>
+    <select id="selectById" resultType="com.hospitalRegistration.entity.Doctor">
+        select * from doctor where id=#{id}
+    </select>
+    <select id="selectList" resultType="com.hospitalRegistration.entity.Doctor">
+        select * from doctor
+    </select>
+    <select id="countDoctorById" resultType="java.lang.Integer">
+        select count(1) from doctor where id=#{id}
+    </select>
+    <select id="getDoctorByName" resultType="com.hospitalRegistration.entity.Doctor">
+        select * from doctor where name=#{name}
+    </select>
+    <!--医生查看患者挂号信息-->
+    <select id="selectPatientRegistrationsByDoctorId" parameterType="java.lang.Integer" resultType="com.hospitalRegistration.entity.Registration">
+        select
+            patient.name as patientName,
+            registration.patient_id as patientId,
+            registration.time as time,
+        registration.type as type,
+        registrationStatus.status as status
+        from
+            registration,
+            registrationStatus,
+            patient,
+            role
+        where
+            patient.id = registration.patient_id
+            and registration.status_id = registrationStatus.id
+            and role.registration_id = registration.number
+            and registration.doctor_id = #{doctorId}
+    </select>
+    <select id="getDoctorNameByDoctorId" resultType="java.lang.String">
+          select name FROM doctor WHERE id = #{doctorId}
+    </select>
+</mapper>
