@@ -5,7 +5,6 @@ import com.hospitalRegistration.mapper.DoctorMapper;
 import com.hospitalRegistration.service.DoctorService;
 import com.hospitalRegistration.service.RegistrationService;
 import com.hospitalRegistration.service.RoleService;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.hospitalRegistration.entity.Schedule;
@@ -16,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/doctor")
 public class DoctorController {
