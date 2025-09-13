@@ -29,7 +29,7 @@ public interface DoctorMapper {
     //查询所有医生
     List<Doctor> selectList();
     // 医生对患者信息进行管理
-    List<Registration> selectPatientRegistrationsByDoctorId(Long doctorId);
+    List<Registration> selectPatientRegistrationsByDoctorId(Integer doctorId);
 
     // 根据医生id查询医生姓名
     String getDoctorNameByDoctorId(int doctorId);

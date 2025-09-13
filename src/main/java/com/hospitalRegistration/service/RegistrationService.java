@@ -16,8 +16,8 @@ public class RegistrationService {
     private RegistrationMapper registrationMapper;
 
     // 患者查询所有挂号信息
-    public List<Registration> selectAllUseByPatient(Integer number) {
-        return registrationMapper.selectAllUseByPatient(number);
+    public List<Registration> selectAllUseByPatient(Integer patientId) {
+        return registrationMapper.selectAllUseByPatient(patientId);
     }
 
     // 医生手动创建挂号信息
@@ -63,6 +63,11 @@ public class RegistrationService {
     // 修改排班信息
     public int updateSchedule(Registration registration) {
         return registrationMapper.updateSchedule(registration);
+    }
+
+    // 根据医生id查询挂号id
+    public int selectNumberByDoctorId(Integer doctorId){
+        return registrationMapper.selectNumberByDoctorId(doctorId);
     }
 }
 

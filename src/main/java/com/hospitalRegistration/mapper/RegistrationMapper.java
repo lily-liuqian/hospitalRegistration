@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface RegistrationMapper {
     // 患者查看挂号信息
-    List<Registration> selectAllUseByPatient(Integer number);
+    List<Registration> selectAllUseByPatient(Integer patientId);
 
     // 医生创建挂号订单
     int insertRegistration(Registration registration);
@@ -36,4 +36,7 @@ public interface RegistrationMapper {
 
     // 排班模版修改操作
     int updateSchedule(Registration registration);
+
+    // 根据医生id查询挂号id
+    Integer selectNumberByDoctorId(Integer doctorId);
 }

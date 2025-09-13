@@ -59,7 +59,7 @@ public class PatientController {
 
     // 患者查询所有历史订单信息
     @GetMapping("/record")
-    public List<Map<String,Object>> selectRegistration(Integer userId) {
+    public Result selectRegistration(Integer userId) {
         // 根据患者id查询挂号记录
         List<Registration> registrations = registrationService.selectAllUseByPatient(userId);
         List<Map<String,Object>> listmap = new ArrayList<>();
@@ -72,12 +72,12 @@ public class PatientController {
             map.put("status",registration.getStatus());
             listmap.add(map);
         }
-        return listmap;
+        return Result.successWithUserId(listmap);
     }
 
     // 患者查询所有医生信息
     @GetMapping("/doctor-list")
-    public List<Map<String,Object>> selectAllDoctor(Integer usereId) {
+    public Result selectAllDoctor(Integer usereId) {
         List<Doctor> list = doctorService.selectAllDoctor();
         List<Map<String,Object>> mapList = new ArrayList<>();
         for (Doctor doctor : list) {
@@ -90,7 +90,7 @@ public class PatientController {
             map.put("study",doctor.getStudy());
             mapList.add(map);
         }
-        return mapList;
+        return Result.successWithUserId(mapList);
     }
 
     // 患者页面挂号
@@ -119,7 +119,7 @@ public class PatientController {
 
     // 患者页面查某位医生的挂号信息
     @GetMapping("/selectDoctorRegistration")
-    public List<Map<String,Object>> selectDoctorRegistration(Integer doctorId) {
+    public Result selectDoctorRegistration(Integer doctorId) {
         List<Registration> registrations = registrationService.selectById(doctorId);
         List<Map<String,Object>> mapList = new ArrayList<>();
         for(Registration registration : registrations) {
@@ -131,7 +131,8 @@ public class PatientController {
             map.put("id",registration.getNumber());
             mapList.add(map);
         }
-        return mapList;
+        Result result = Result.successWithUserId(mapList);
+        return result;
     }
 
 }

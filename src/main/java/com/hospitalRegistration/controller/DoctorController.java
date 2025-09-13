@@ -73,7 +73,7 @@ public class DoctorController {
 
     // 医生界面的医生个人信息展示
     @GetMapping("/show")
-    public Map<String,Object> showDoctor(Long userId){
+    public Result showDoctor(Long userId){
         Doctor doctor = doctorService.selectDoctorById(userId);
         Map<String,Object> map = new HashMap<>();
         map.put("name",doctor.getName());
@@ -81,7 +81,8 @@ public class DoctorController {
         map.put("office",doctor.getOffice());
         map.put("position",doctor.getPosition());
         map.put("study",doctor.getStudy());
-        return map;
+        Result result = Result.successWithUserId(map);
+        return result;
     }
 
     // 修改医生信息
@@ -146,7 +147,7 @@ public class DoctorController {
 
     // 医生对患者挂号信息状态管理(医生查看患者挂号信息)
     @GetMapping("/regis-message")
-    public List<Map<String,Object>> selectAllRegistration(Long userId){
+    public Result selectAllRegistration(Integer userId){
         List<Map<String,Object>> listmap = new ArrayList<>();
         List<Registration> registrations = doctorService.selectAllRegistrationsByDoctorId(userId);
         for (Registration registration : registrations) {
@@ -158,7 +159,8 @@ public class DoctorController {
             map.put("currentStatus",registration.getStatus());
             listmap.add(map);
         }
-        return listmap;
+        Result result = Result.successWithUserId(listmap);
+        return result;
     }
 
     // 医生修改患者状态
@@ -176,9 +178,9 @@ public class DoctorController {
 
     // 医生查清患者失约次数
     @GetMapping("/selectMissNum")
-    public int selectMissNum(Long patientId){
+    public Result selectMissNum(Long patientId){
         int num = registrationService.selectMissNumById(patientId);
-        return num;
+        return Result.successWithUserId(num);
     }
 
     // 医生排班模版设置
@@ -195,6 +197,11 @@ public class DoctorController {
            registration.setFee(schedule.getFee());
            registration.setStatusId(0);
            registrationService.setSchedule(registration);
+           int registrationId = registrationService.selectNumberByDoctorId(doctorId);
+           int affectedRows1 = roleService.insertRole(registrationId, doctorId);
+           if (affectedRows1 <= 0) {
+               return Result.errorCode();
+           }
        }
        return Result.successCode();
     }
@@ -213,6 +220,11 @@ public class DoctorController {
             registration.setFee(schedule.getFee());
             registration.setStatusId(0);
             registrationService.setSchedule(registration);
+            int registrationId = registrationService.selectNumberByDoctorId(doctorId);
+            int affectedRows1 = roleService.insertRole(registrationId, doctorId);
+            if (affectedRows1 <= 0) {
+                return Result.errorCode();
+            }
         }
         return Result.successCode();
     }

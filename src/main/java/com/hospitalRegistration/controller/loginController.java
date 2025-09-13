@@ -55,8 +55,10 @@ public class loginController {
                 // 构建返回结果（包含用户信息和Token）
                 Map<String, Object> data = new HashMap<>();
                 Long id = doctor.getId();
+                data.put("code", 200);
                 data.put("userId", id);
                 data.put("token", token);
+                System.out.println("登录成功");
                 return data;
             }
             else if (roleId == 0) {
@@ -74,8 +76,10 @@ public class loginController {
                 // 构建返回结果
                 Map<String, Object> data = new HashMap<>();
                 Long id = patient.getId();
+                data.put("code", 200);
                 data.put("userId", id);
                 data.put("token", token);
+                System.out.println("登录成功");
                 return data;
             } else {
                 System.out.println("无效role_id：仅支持1（医生）或0（患者）");

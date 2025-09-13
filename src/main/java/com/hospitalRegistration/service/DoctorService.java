@@ -31,7 +31,7 @@ public class DoctorService {
 
     // 医生对患者信息进行管理
     //selectPatientRegistrationsByDoctorId
-    public List<Registration> selectAllRegistrationsByDoctorId(Long doctorId) {
+    public List<Registration> selectAllRegistrationsByDoctorId(Integer doctorId) {
         return doctorMapper.selectPatientRegistrationsByDoctorId(doctorId);
     }
 

@@ -35,7 +35,7 @@
         from
             registrationStatus,registration
         where
-            registration.status_id = registrationStatus.id and registration.number=#{number}
+            registration.status_id = registrationStatus.id and registration.patient_id=#{patientId}
     </select>
     <select id="selectById" resultType="com.hospitalRegistration.entity.Registration">
         select * from registration where doctor_id=#{doctorId}
@@ -50,5 +50,8 @@
             registrationStatus,registration
         where
             registration.status_id = registrationStatus.id
+    </select>
+    <select id="selectNumberByDoctorId" resultType="java.lang.Integer">
+        select number from registration where doctor_id=#{doctorId}
     </select>
 </mapper>
