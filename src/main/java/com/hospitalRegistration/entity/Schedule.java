@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Schedule {
-    private String time;
-    private String type;
-    private int userId;
-    private int fee;
-    // 挂号id
-    private int number;
+    private Integer doctorId;
+    private List<Map<String,Object>> schedules;
 }

@@ -20,7 +20,7 @@ public interface RegistrationMapper {
     int postRegistration(Registration registration);
 
     // 医生修改患者状态
-    int updateStatus(@Param("number")  int number, @Param("status") String status);
+    int updateStatus(@Param("number")  int number, @Param("status") int status);
 
     // 医生查看患者失约次数
     int selectMissNumById(Long patientId);

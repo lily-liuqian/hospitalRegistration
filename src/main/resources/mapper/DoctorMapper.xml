@@ -33,11 +33,12 @@
     <!--医生查看患者挂号信息-->
     <select id="selectPatientRegistrationsByDoctorId" parameterType="java.lang.Integer" resultType="com.hospitalRegistration.entity.Registration">
         select
+            registration.number as number,
             patient.name as patientName,
             registration.patient_id as patientId,
             registration.time as time,
-        registration.type as type,
-        registrationStatus.status as status
+            registration.type as type,
+        registration.status_id as statusId
         from
             registration,
             registrationStatus,

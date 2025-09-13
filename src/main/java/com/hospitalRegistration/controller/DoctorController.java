@@ -4,6 +4,7 @@ import com.hospitalRegistration.entity.*;
 import com.hospitalRegistration.mapper.DoctorMapper;
 import com.hospitalRegistration.service.DoctorService;
 import com.hospitalRegistration.service.RegistrationService;
+import com.hospitalRegistration.service.RegistrationTypeService;
 import com.hospitalRegistration.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,30 +28,32 @@ public class DoctorController {
     private RegistrationService registrationService;
     @Resource
     private RoleService roleService;
+    @Resource
+    private RegistrationTypeService registrationTypeService;
 
     @PostMapping("/register")
-    public int doRegister(@RequestBody DoctorRegister doctorRegister) {
+    public Map<String,Integer> doRegister(@RequestBody DoctorRegister doctorRegister) {
         // 校验注册参数
 
         // 这里的Account和name中的数据是一致的
-        if (doctorRegister.getAccount()== null|| doctorRegister.getAccount().trim().isEmpty()) {
-            return Result.errorCode();
-        }
-        if (doctorRegister.getPassword()== null|| doctorRegister.getPassword().trim().isEmpty()) {
-            return Result.errorCode();
-        }
-        if (doctorRegister.getGender()== null|| doctorRegister.getGender().trim().isEmpty()) {
-            return Result.errorCode();
-        }
-        if (doctorRegister.getOffice()== null|| doctorRegister.getOffice().trim().isEmpty()) {
-            return Result.errorCode();
-        }
-        if (doctorRegister.getPosition()== null|| doctorRegister.getPosition().trim().isEmpty()) {
-            return Result.errorCode();
-        }
-        if (doctorRegister.getStudy()== null|| doctorRegister.getStudy().trim().isEmpty()) {
-            return Result.errorCode();
-        }
+//        if (doctorRegister.getAccount()== null|| doctorRegister.getAccount().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
+//        if (doctorRegister.getPassword()== null|| doctorRegister.getPassword().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
+//        if (doctorRegister.getGender()== null|| doctorRegister.getGender().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
+//        if (doctorRegister.getOffice()== null|| doctorRegister.getOffice().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
+//        if (doctorRegister.getPosition()== null|| doctorRegister.getPosition().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
+//        if (doctorRegister.getStudy()== null|| doctorRegister.getStudy().trim().isEmpty()) {
+//            return Result.errorCode();
+//        }
 
         // 创建医生对象
         Doctor doctor = new Doctor();
@@ -60,15 +63,20 @@ public class DoctorController {
         doctor.setOffice(doctorRegister.getOffice());
         doctor.setPosition(doctorRegister.getPosition());
         doctor.setStudy(doctorRegister.getStudy());
+        doctor.setAge(doctorRegister.getAge());
         doctor.setRoleId(1);
 
         // 新增医生（调用 Mapper 的 insert 方法）
         int insert = doctorMapper.insertLogin(doctor);
         if (insert <= 0) {
-            return Result.errorCode();
+            Map<String, Integer> map = new HashMap<>();
+            map.put("code", 500);
+            return map;
         }
         // 注册成功，返回成功信息
-        return Result.successCode();
+        Map<String, Integer> map = new HashMap<>();
+        map.put("code", 200);
+        return map;
     }
 
     // 医生界面的医生个人信息展示
@@ -152,11 +160,12 @@ public class DoctorController {
         List<Registration> registrations = doctorService.selectAllRegistrationsByDoctorId(userId);
         for (Registration registration : registrations) {
             Map<String,Object> map = new HashMap<>();
+            map.put("id",registration.getNumber());
             map.put("name",registration.getPatientName());
             map.put("patientId",registration.getPatientId());
             map.put("time",registration.getTime());
             map.put("type",registration.getType());
-            map.put("currentStatus",registration.getStatus());
+            map.put("currentStatus",registration.getStatusId());
             listmap.add(map);
         }
         Result result = Result.successWithUserId(listmap);
@@ -165,14 +174,18 @@ public class DoctorController {
 
     // 医生修改患者状态
     @PostMapping("/updateStatus")
-    public int updateStatus(@RequestBody UpdateStatus updateStatus) {
+    public Map<String,Object> updateStatus(@RequestBody UpdateStatus updateStatus) {
         int number = updateStatus.getId();
-        String newStatus = updateStatus.getNewStatus();
+        int newStatus = updateStatus.getNewStatus();
         int insert = registrationService.updateStatus(number, newStatus);
         if (insert > 0) {
-            return Result.successCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code", 200);
+            return map;
         } else {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code", 500);
+            return map;
         }
     }
 
@@ -185,48 +198,68 @@ public class DoctorController {
 
     // 医生排班模版设置
     @PostMapping("/schedule")
-    public int setSchedule(@RequestBody List<Schedule> schedules) {
-       for (Schedule schedule : schedules) {
-           Integer doctorId = schedule.getUserId();
-           String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
-           Registration registration = new Registration();
-           registration.setDoctorId(doctorId);
-           registration.setDoctorName(doctorName);
-           registration.setTime(schedule.getTime());
-           registration.setType(schedule.getType());
-           registration.setFee(schedule.getFee());
-           registration.setStatusId(0);
-           registrationService.setSchedule(registration);
-           int registrationId = registrationService.selectNumberByDoctorId(doctorId);
-           int affectedRows1 = roleService.insertRole(registrationId, doctorId);
-           if (affectedRows1 <= 0) {
-               return Result.errorCode();
-           }
-       }
-       return Result.successCode();
+    public Map<String,Object> setSchedule(@RequestBody Schedule schedule) {
+        Integer doctorId = schedule.getDoctorId();
+        String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
+        Registration registration = new Registration();
+        registration.setDoctorId(doctorId);
+        registration.setDoctorName(doctorName);
+        Map<String,Object> map = schedule.getSchedules().get(0);
+        String time = map.get("time").toString();
+        System.out.println(time);
+        if (map == null) {
+            System.out.println("map为空");
+        }
+        registration.setTime(time);
+        Integer type = (Integer)map.get("type");
+        String registrationType = registrationTypeService.selectTypeById(type);
+        registration.setType(registrationType);
+        Integer fee = (Integer)map.get("fee");
+        registration.setFee(fee);
+        registration.setStatusId(0);
+        registrationService.setSchedule(registration);
+        int registrationId = registrationService.selectNumberByDoctorId(doctorId);
+        int affectedRows1 = roleService.insertRole(registrationId, doctorId);
+        if (affectedRows1 <= 0) {
+            Map<String,Object> map1 = new HashMap<>();
+            map1.put("code",500);
+            return map1;
+        }
+        Map<String,Object> map1 = new HashMap<>();
+        map1.put("code",200);
+        return map1;
+
     }
 
     // 排班模版增加操作
     @PostMapping("/scheduleInsert")
-    public int addSchedule(@RequestBody List<Schedule> schedules) {
-        for (Schedule schedule : schedules) {
-            Integer doctorId = schedule.getUserId();
-            String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
-            Registration registration = new Registration();
-            registration.setDoctorId(doctorId);
-            registration.setDoctorName(doctorName);
-            registration.setTime(schedule.getTime());
-            registration.setType(schedule.getType());
-            registration.setFee(schedule.getFee());
-            registration.setStatusId(0);
-            registrationService.setSchedule(registration);
-            int registrationId = registrationService.selectNumberByDoctorId(doctorId);
-            int affectedRows1 = roleService.insertRole(registrationId, doctorId);
-            if (affectedRows1 <= 0) {
-                return Result.errorCode();
-            }
+    public Map<String, Object> addSchedule(@RequestBody Schedule schedule) {
+        Integer doctorId = schedule.getDoctorId();
+        String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
+        Registration registration = new Registration();
+        registration.setDoctorId(doctorId);
+        registration.setDoctorName(doctorName);
+        Map<String,Object> map = schedule.getSchedules().get(0);
+        String time = map.get("time").toString();
+        registration.setTime(time);
+        Integer type = (Integer)map.get("type");
+        String registrationType = registrationTypeService.selectTypeById(type);
+        registration.setType(registrationType);
+        Integer fee = (Integer)map.get("fee");
+        registration.setFee(fee);
+        registration.setStatusId(0);
+        registrationService.setSchedule(registration);
+        int registrationId = registrationService.selectNumberByDoctorId(doctorId);
+        int affectedRows1 = roleService.insertRole(registrationId, doctorId);
+        if (affectedRows1 <= 0) {
+            Map<String,Object> map1 = new HashMap<>();
+            map1.put("code",500);
+            return map1;
         }
-        return Result.successCode();
+        Map<String,Object> map1 = new HashMap<>();
+        map1.put("code",200);
+        return map1;
+
     }
 
     // 排班模版删除操作(根据挂号id删除单条数据)
@@ -265,24 +298,24 @@ public class DoctorController {
         return listmap;
     }
 
-    // 排班模版修改操作
-    @PostMapping("/updateSchedule")
-    public int updateSchedule(@RequestBody Schedule schedule) {
-        Integer doctorId = schedule.getUserId();
-        Integer number = schedule.getNumber();
-        String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
-        Registration registration = new Registration();
-        registration.setNumber(number);
-        registration.setDoctorId(doctorId);
-        registration.setDoctorName(doctorName);
-        registration.setTime(schedule.getTime());
-        registration.setType(schedule.getType());
-        registration.setFee(schedule.getFee());
-        int updateNum = registrationService.updateSchedule(registration);
-        if (updateNum > 0) {
-            return Result.successCode();
-        }else{
-            return Result.errorCode();
-        }
-    }
+//    // 排班模版修改操作
+//    @PostMapping("/updateSchedule")
+//    public int updateSchedule(@RequestBody Schedule schedule) {
+//        Integer doctorId = schedule.getUserId();
+//        Integer number = schedule.getNumber();
+//        String doctorName = doctorService.selectDoctorNameByDoctorId(doctorId);
+//        Registration registration = new Registration();
+//        registration.setNumber(number);
+//        registration.setDoctorId(doctorId);
+//        registration.setDoctorName(doctorName);
+//        registration.setTime(schedule.getTime());
+//        registration.setType(schedule.getType());
+//        registration.setFee(schedule.getFee());
+//        int updateNum = registrationService.updateSchedule(registration);
+//        if (updateNum > 0) {
+//            return Result.successCode();
+//        }else{
+//            return Result.errorCode();
+//        }
+//    }
 }

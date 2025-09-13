@@ -29,16 +29,22 @@ public class PatientController {
 
     // 提交注册请求：用 Patient 接收所有注册参数
     @PostMapping("/register")
-    public int doRegister(@RequestBody PatientRegister patientRegister) {
+    public Map<String,Object> doRegister(@RequestBody PatientRegister patientRegister) {
         // 校验注册参数
         if (patientRegister.getUsername() == null || patientRegister.getUsername().trim().isEmpty()) {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
         if (patientRegister.getPassword() == null || patientRegister.getPassword().trim().isEmpty()) {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
         if (patientRegister.getRole() == null) { // 假设 role 是角色ID，需非空
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
 
         // 创建患者对象（newPatient 定义在外部，确保后续可访问）
@@ -50,10 +56,14 @@ public class PatientController {
         // 插入数据库
         int insertRows = patientMapper.insert(newPatient);
         if (insertRows <= 0) {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
         // 注册成功
-        return Result.successCode();
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",200);
+        return map;
     }
 
 
@@ -69,7 +79,7 @@ public class PatientController {
             map.put("doctorName",registration.getDoctorName());
             map.put("time",registration.getTime());
             map.put("type",registration.getType());
-            map.put("status",registration.getStatus());
+            map.put("status",registration.getStatusId());
             listmap.add(map);
         }
         return Result.successWithUserId(listmap);
@@ -95,12 +105,14 @@ public class PatientController {
 
     // 患者页面挂号
     @PostMapping("/post")
-    public int doPostRegistration(@RequestBody PatientPost patientPost) {
+    public Map<String,Object> doPostRegistration(@RequestBody PatientPost patientPost) {
         int doctorId = patientPost.getDoctorId();
         List<Registration> registrations = registrationService.selectById(doctorId);
         Registration registration = registrations.get(0);
         if (registration == null) {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
         int registrationId = registration.getNumber();
         int patientId = patientPost.getUserId();
@@ -112,9 +124,13 @@ public class PatientController {
         int insert = registrationService.postRegistration(newRegistration);
         int insert1 = roleService.updateRole(registrationId,doctorId,patientId);
         if(insert <= 0||insert1 <= 0) {
-            return Result.errorCode();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",500);
+            return map;
         }
-        return Result.successCode();
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",200);
+        return map;
     }
 
     // 患者页面查某位医生的挂号信息

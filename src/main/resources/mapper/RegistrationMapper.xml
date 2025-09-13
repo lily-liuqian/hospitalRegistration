@@ -11,10 +11,7 @@
     </update>
     <update id="updateStatus" >
         update registration
-        set status_id = (
-            select id from registrationStatus
-            where registrationStatus.status = #{status}
-        )
+        set status_id=#{status}
         where number = #{number}
     </update>
     <update id="setSchedule">
@@ -31,11 +28,11 @@
 
     <select id="selectAllUseByPatient" resultType="com.hospitalRegistration.entity.Registration">
         select
-            registration.number,doctor_name,time,type,status
+            registration.number,doctor_name,time,type,status_id
         from
             registrationStatus,registration
         where
-            registration.status_id = registrationStatus.id and registration.patient_id=#{patientId}
+            registration.patient_id=#{patientId} and registration.status_id=registrationStatus.id;
     </select>
     <select id="selectById" resultType="com.hospitalRegistration.entity.Registration">
         select * from registration where doctor_id=#{doctorId}

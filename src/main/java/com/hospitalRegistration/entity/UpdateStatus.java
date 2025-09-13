@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateStatus {
     private Integer id;
-    private String newStatus;
+    private Integer newStatus;
 }

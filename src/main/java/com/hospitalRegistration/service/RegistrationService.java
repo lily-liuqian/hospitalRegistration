@@ -36,7 +36,7 @@ public class RegistrationService {
     }
 
     // 医生修改患者状态
-    public int updateStatus(int number, @Param("status") String status) {
+    public int updateStatus(int number, @Param("status") int status) {
         return registrationMapper.updateStatus(number, status);
     }
 

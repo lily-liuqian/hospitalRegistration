@@ -15,4 +15,5 @@ public class DoctorRegister {
     String office;
     String position;
     String study;
+    int age;
 }
